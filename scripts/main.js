@@ -47,36 +47,51 @@ function denormalize(tensor, min, max) {
 }
 
 async function run () {
+
+    // import from CSV
     const houseSalesDataSet = tf.data.csv("http://127.0.0.1:5500//kc_house_data.csv")
     // const sampleDataSet = houseSalesDataSet.take(10)
     // const dataArray = await sampleDataSet.toArray()
     // console.log(dataArray)
 
-    const points = houseSalesDataSet.map(record => ({
+    // extract from data and plot X and Y values
+    const pointsDataSet = houseSalesDataSet.map(record => ({
         x: record.sqft_living,
         y: record.price
     }))
-    plot(await points.toArray(), "Square feet")
+    const points = await pointsDataSet.toArray()
+
+    // tensor elements must be even to split
+    if(points.length % 2 !== 0) {
+        points.pop()
+    }
+
+    tf.util.shuffle(points)
+    plot(points, "Square feet")
 
     // features (inputs) 
-    const featureValues = await points.map(p => p.x).toArray()
+    const featureValues = points.map(p => p.x)
     const featureTensor = tf.tensor2d(featureValues, [featureValues.length, 1])
 
     //labels (outputs)
-    const labelValues = await points.map(p => p.y).toArray()
+    const labelValues = points.map(p => p.y)
     const labelTensor = tf.tensor2d(labelValues, [labelValues.length, 1])
 
     featureTensor.print()
     labelTensor.print()
 
-    // const normalizedFeature = normalize(featureTensor)
-    // const normalizedLabel = normalize(labelTensor)
+    // normalize tensors
+    const normalizedFeature = normalize(featureTensor)
+    const normalizedLabel = normalize(labelTensor)
 
     // normalizedFeature.tensor.print()
     // normalizedLabel.tensor.print()
 
     // denormalize(normalizedFeature.tensor, normalizedFeature.min, normalizedFeature.max).print()
 
+    const [trainingFeature, testingFeature] = tf.split(normalizedFeature.tensor, 2)
+    const [trainingLabel, testingLabel] = tf.split(normalizedLabel.tensor, 2)
+    trainingFeature.print(true)
 }
 
 run()
