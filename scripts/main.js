@@ -15,6 +15,8 @@
 //   // Open the browser devtools to see the output
 // });
 
+// await tf.ready()
+
 async function plot(pointsArray, featureName) {
     tfvis.render.scatterplot(
         {
@@ -44,6 +46,19 @@ function normalize(tensor) {
 function denormalize(tensor, min, max) {
     const denormalizedTensor = tensor.mul(max.sub(min)).add(min)
     return denormalizedTensor
+}
+
+function createModel() {
+    const model = tf.sequential()
+
+    model.add(tf.layers.dense({
+        units: 1,
+        useBias: true,
+        activation: "linear",
+        inputDim: 1
+    }))
+
+    return model
 }
 
 async function run () {
@@ -91,7 +106,10 @@ async function run () {
 
     const [trainingFeature, testingFeature] = tf.split(normalizedFeature.tensor, 2)
     const [trainingLabel, testingLabel] = tf.split(normalizedLabel.tensor, 2)
-    trainingFeature.print(true)
+    // trainingFeature.print(true)
+
+    const model = createModel()
+    tfvis.show.modelSummary({ name: "Model summary" }, model)
 }
 
 run()
