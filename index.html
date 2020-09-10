@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+<title>TensorFlow.js linear regression</title>
 <script type="module" src="scripts/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
 </head>
 <body>
+
+<script>
+
+
+        async function toggleVisor () {
+            tfvis.visor().toggle();
+        }
+</script>
+
     <!--   Header   -->
 <div class="section no-pad-bot" id="index-banner">
   <div class="container">
