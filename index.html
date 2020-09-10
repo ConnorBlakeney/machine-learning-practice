@@ -14,7 +14,7 @@
 
 <script>
 
-        async function plot(pointsArray, featureName, predictedPointsArray = null) {
+    async function plot(pointsArray, featureName, predictedPointsArray = null) {
     const values = [pointsArray.slice(0, 1000)];
     const series = ["original"];
     if (Array.isArray(predictedPointsArray)) {
@@ -95,7 +95,7 @@
     );
 
     return model.fit(trainingFeatureTensor, trainingLabelTensor, {
-      batchSize: 32,
+      batchSize: 320,
       epochs: 20,
       validationSplit: 0.2,
       callbacks: {
@@ -132,6 +132,7 @@
   }
 
   const storageID = "kc-house-price-regression";
+
   async function save () {
     const saveResults = await model.save(`localstorage://${storageID}`);
     document.getElementById("model-status").innerHTML = `Trained (saved ${saveResults.modelArtifactsInfo.dateSaved})`;
