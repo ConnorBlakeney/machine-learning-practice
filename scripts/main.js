@@ -49,16 +49,41 @@ function denormalize(tensor, min, max) {
 }
 
 function createModel() {
+    
     const model = tf.sequential()
 
     model.add(tf.layers.dense({
         units: 1,
         useBias: true,
         activation: "linear",
-        inputDim: 1
+        inputDim: 1,
     }))
 
+    const optimizer = tf.train.sgd(0.1)
+
+    model.compile({
+        loss: "meanSquaredError",
+        optimizer,
+    })
+
     return model
+}
+
+async function trainModel (model, trainingFeature, trainingLabel) {
+
+    const { onBatchEnd, onEpochEnd } = tfvis.show.fitCallbacks(
+        { name: "Training Performance" },
+        ['loss']
+    )
+
+    return model.fit(trainingFeature, trainingLabel, {
+        batchSize: 512,
+        epochs: 20,
+        validationSplit: 0.2,
+        callbacks: {
+            onEpochEnd, onBatchEnd, 
+        }
+    })
 }
 
 async function run () {
@@ -110,6 +135,17 @@ async function run () {
 
     const model = createModel()
     tfvis.show.modelSummary({ name: "Model summary" }, model)
+
+    const result = await trainModel(model, trainingFeature, trainingLabel)
+    const trainingLoss = result.history.loss.pop()
+    console.log(result, `Training set loss: ${trainingLoss}`)   
+    const validationLoss = result.history.val_loss.pop()
+    console(`Validation set loss: ${validationLoss}`)
+
+    const lossTensor = model.evaluate(testingFeature, testingLabel)
+    const loss = await lossTensor.dataSync()
+    console.log(`Testing set loss: ${loss}`)    
+
 }
 
 run()
